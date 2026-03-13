@@ -77,7 +77,7 @@ define Build/Prepare
     echo "/usr/bin/AdGuardHome" > $(PKG_BUILD_DIR)/lucky.keep
     echo "/etc/appfilter/" > $(PKG_BUILD_DIR)/lucky.keep
     echo "/etc/easytier/" > $(PKG_BUILD_DIR)/lucky.keep
-    # echo "/usr/bin/AdGuardHome" > $(PKG_BUILD_DIR)/lucky.keep
+    echo "/etc/AdGuardHome/" > $(PKG_BUILD_DIR)/lucky.keep
 
 	# 如果有其他需要备份的路径，可以继续添加
 	# echo "$(LUCKY_CONF_DIR)" >> $(PKG_BUILD_DIR)/lucky.keep
