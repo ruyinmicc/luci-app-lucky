@@ -54,30 +54,44 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=Lucky gdy
+	TITLE:=Lucky gdy (wanji custom)
 	DEPENDS:=@(i386||x86_64||arm||aarch64||mipsel||mips)
-	URL:=https://github.com/gdy666/lucky
+	URL:=https://release.66666.host/
 endef
 
 define Package/$(PKG_NAME)/description
-  Main functions of Lucky: ipv4/ipv6 portforward,ddns,IOT wake on lan ,reverse proxy and more...
+  Custom Lucky from wanji: ipv4/ipv6 portforward, ddns, IOT wake on lan, reverse proxy and more...
 endef
 
-
-
-
+# === 替换为 wanji 下载源（架构名无需转换）===
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz ] && wget https://github.com/gdy666/lucky/releases/download/v$(PKG_VERSION)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz -O $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz
-	tar -xzvf $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz -C $(PKG_BUILD_DIR)
+	@mkdir -p $(PKG_BUILD_DIR)
+
+	# 构造 wanji 下载 URL（使用原生 LUCKY_ARCH）
+	WANJI_URL := https://release.66666.host/v$(PKG_VERSION)/$(PKG_VERSION)_wanji/lucky_$(PKG_VERSION)_Linux_$(LUCKY_ARCH)_wanji.tar.gz
+
+	# 下载 tar.gz 包
+	wget -O $(PKG_BUILD_DIR)/lucky.tar.gz "$(WANJI_URL)"
+
+	# 验证下载是否成功
+	if [ ! -s $(PKG_BUILD_DIR)/lucky.tar.gz ]; then \
+		echo "❌ ERROR: Failed to download lucky from: $(WANJI_URL)"; \
+		exit 1; \
+	fi
+
+	# 解压到构建目录
+	tar -xzvf $(PKG_BUILD_DIR)/lucky.tar.gz -C $(PKG_BUILD_DIR)
+
+	# 确保二进制可执行
+	chmod +x $(PKG_BUILD_DIR)/lucky
 endef
-
-
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/lucky
 endef
 
 define Build/Compile
+	# No compilation needed
 endef
 
 define Package/$(PKG_NAME)/install
@@ -88,7 +102,5 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/lucky.init $(1)/etc/init.d/lucky
 	$(INSTALL_CONF) $(CURDIR)/files/luckyuci $(1)/etc/config/lucky
 endef
-
-
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
