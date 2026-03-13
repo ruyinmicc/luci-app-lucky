@@ -64,7 +64,7 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz ] && wget https://release.66666.host/v$(PKG_VERSION)/$(PKG_VERSION)_wanji/lucky_$(PKG_VERSION)_Linux_$(LUCKY_ARCH)_wanji.tar.gz
+	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz ] && wget https://release.66666.host/v$(PKG_VERSION)/$(PKG_VERSION)_wanji/lucky_$(PKG_VERSION)_Linux_$(LUCKY_ARCH)_wanji.tar.gz -O $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz
 	tar -xzvf $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz -C $(PKG_BUILD_DIR)
 endef
 
