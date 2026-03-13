@@ -64,8 +64,10 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz ] && wget https://release.66666.host/v$(PKG_VERSION)/$(PKG_VERSION)_wanji/lucky_$(PKG_VERSION)_Linux_$(LUCKY_ARCH)_wanji.tar.gz -O $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz
-	tar -xzvf $(PKG_BUILD_DIR)/$(PKG_NAME)_$(PKG_VERSION)_Linux_$(LUCKY_ARCH).tar.gz -C $(PKG_BUILD_DIR)
+	# 创建构建目录
+	mkdir -p $(PKG_BUILD_DIR)
+	# 不再下载二进制文件，只准备需要的文件
+	# 如果需要从files目录复制某些文件，可以在这里添加
 endef
 
 
@@ -78,10 +80,10 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/bin/
+	# $(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/etc/config/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lucky $(1)/usr/bin/lucky
+	# $(INSTALL_BIN) $(PKG_BUILD_DIR)/lucky $(1)/usr/bin/lucky
 	$(INSTALL_BIN) ./files/lucky.init $(1)/etc/init.d/lucky
 	$(INSTALL_CONF) $(CURDIR)/files/luckyuci $(1)/etc/config/lucky
 endef
