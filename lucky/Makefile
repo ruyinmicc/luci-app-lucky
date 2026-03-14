@@ -24,17 +24,20 @@ ifeq ($(ARCH),x86_64)
 endif
 ifeq ($(ARCH),arm)
 	ifeq ($(BOARD),bcm53xx)
-		LUCKY_ARCH:=armv6
+		LUCKY_ARCH:=armv7
 	else
 		LUCKY_ARCH:=armv7
 	endif
 endif
-ifeq ($(BOARD),bcm53xx)
-	LUCKY_ARCH:=armv6
-ifeq ($(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE)))),)
-	LUCKY_ARCH:=armv5
-endif
-endif
+
+# === 注释掉以下冗余且易引发语法错误的嵌套判断块 ===
+# ifeq ($(BOARD),bcm53xx)
+# 	LUCKY_ARCH:=armv6
+# ifeq ($(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE)))),)
+# 	LUCKY_ARCH:=armv5
+# endif
+# endif
+
 ifeq ($(BOARD),kirkwood)
 	LUCKY_ARCH:=armv5
 endif
@@ -64,26 +67,16 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	# 创建构建目录
 	mkdir -p $(PKG_BUILD_DIR)
-	# 不再下载二进制文件，只准备需要的文件
-	# 如果需要从files目录复制某些文件，可以在这里添加
-	
-	# 创建备份清单文件
 	echo "/usr/bin/lucky" > $(PKG_BUILD_DIR)/lucky.keep
-	echo "/usr/bin/easytier-cli" > $(PKG_BUILD_DIR)/lucky.keep
-	echo "/usr/bin/easytier-core" > $(PKG_BUILD_DIR)/lucky.keep
-    echo "/usr/bin/easytier-web" > $(PKG_BUILD_DIR)/lucky.keep
-    echo "/usr/bin/AdGuardHome" > $(PKG_BUILD_DIR)/lucky.keep
-    echo "/etc/appfilter/" > $(PKG_BUILD_DIR)/lucky.keep
-    echo "/etc/easytier/" > $(PKG_BUILD_DIR)/lucky.keep
-    echo "/etc/AdGuardHome/" > $(PKG_BUILD_DIR)/lucky.keep
-
-	# 如果有其他需要备份的路径，可以继续添加
-	# echo "$(LUCKY_CONF_DIR)" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/usr/bin/easytier-cli" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/usr/bin/easytier-core" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/usr/bin/easytier-web" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/usr/bin/AdGuardHome" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/etc/appfilter/" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/etc/easytier/" >> $(PKG_BUILD_DIR)/lucky.keep
+	echo "/etc/AdGuardHome/" >> $(PKG_BUILD_DIR)/lucky.keep
 endef
-
-
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/lucky
@@ -93,20 +86,14 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	# $(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/etc/config/
-	# $(INSTALL_BIN) $(PKG_BUILD_DIR)/lucky $(1)/usr/bin/lucky
 	$(INSTALL_DIR) $(1)/lib/upgrade/keep.d/
 	
-	# 安装初始化脚本和UCI配置文件
 	$(INSTALL_BIN) ./files/lucky.init $(1)/etc/init.d/lucky
 	$(INSTALL_CONF) $(CURDIR)/files/luckyuci $(1)/etc/config/lucky
 	
-	# 安装备份清单文件
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/lucky.keep $(1)/lib/upgrade/keep.d/lucky
 endef
-
-
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
